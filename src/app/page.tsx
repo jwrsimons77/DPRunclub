@@ -27,14 +27,24 @@ export default function DarkPeakHome() {
 
   return (
     <>
-      <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
+      <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-x-hidden">
+
+        {/* Floating Header with Logo */}
+        <div className="absolute top-0 w-full z-30 bg-transparent py-4 flex justify-center">
+          <img
+            src="/dprc-logo.svg"
+            alt="DPRC Logo"
+            className="h-8 w-auto md:h-12"
+          />
+        </div>
+
         {/* Hero Section with Banner */}
         <section
-          className="relative flex flex-col items-center justify-center text-center px-6 py-20 h-[600px] bg-cover bg-center"
+          className="relative flex flex-col items-center justify-center text-center px-6 h-[100dvh] w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/banner.jpg')" }}
         >
-          <div className="absolute inset-0 bg-black/60"></div>
-          <div className="relative z-10">
+          <div className="absolute inset-0 bg-black/60 sm:bg-black/40"></div>
+          <div className="relative z-10 mt-10">
             <motion.h1
               className="text-5xl md:text-7xl font-bold mb-4 tracking-tight text-white"
               initial={{ opacity: 0, y: 20 }}
@@ -44,12 +54,12 @@ export default function DarkPeakHome() {
               Dark Peak Run Club
             </motion.h1>
             <motion.p
-              className="max-w-2xl text-lg md:text-xl mb-6 text-white"
+              className="max-w-2xl text-xl md:text-2xl mb-6 text-white"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2 }}
             >
-              A retro-fresh community of runners exploring the Peak District every week. Come run wild with us.
+              Run slow, drink coffee, make mates.
             </motion.p>
             <a
               href="https://www.instagram.com/darkpeakrunclub/#"

@@ -1,12 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MountainIcon, CalendarIcon, MapPinIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DarkPeakHome() {
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const events = [
     {
       title: "Sunday Trail Run",
@@ -28,23 +32,23 @@ export default function DarkPeakHome() {
   return (
     <>
       <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-x-hidden">
-
-        {/* Floating Header with Logo */}
-        <div className="absolute top-0 w-full z-30 bg-transparent py-4 flex justify-center">
-          <img
-            src="/dprc-logo.svg"
-            alt="DPRC Logo"
-            className="h-8 w-auto md:h-12"
-          />
-        </div>
-
-        {/* Hero Section with Banner */}
+        {/* Hero Section */}
         <section
           className="relative flex flex-col items-center justify-center text-center px-6 h-[100dvh] w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/banner.jpg')" }}
         >
+          {/* Logo */}
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+            <img
+              src="/dprc-logo.svg"
+              alt="DPRC Logo"
+              className="h-8 w-auto md:h-12"
+            />
+          </div>
+
           <div className="absolute inset-0 bg-black/60 sm:bg-black/40"></div>
-          <div className="relative z-10 mt-10">
+
+          <div className="relative z-10">
             <motion.h1
               className="text-5xl md:text-7xl font-bold mb-4 tracking-tight text-white"
               initial={{ opacity: 0, y: 20 }}
@@ -118,8 +122,34 @@ export default function DarkPeakHome() {
           <div className="max-w-xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-semibold mb-6">Join Us</h2>
             <form
-              action="https://formspree.io/f/xldjaylk"
-              method="POST"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setSubmitted(false);
+                setError(false);
+
+                const form = e.currentTarget;
+                const data = new FormData(form);
+
+                try {
+                  const res = await fetch("https://formspree.io/f/xldjaylk", {
+                    method: "POST",
+                    body: data,
+                    headers: { Accept: "application/json" },
+                  });
+
+                  if (res.ok) {
+                    setSubmitted(true);
+                    form.reset();
+                  } else {
+                    setError(true);
+                  }
+                } catch {
+                  setError(true);
+                } finally {
+                  setLoading(false);
+                }
+              }}
               className="space-y-4 text-left"
             >
               <input
@@ -144,8 +174,22 @@ export default function DarkPeakHome() {
                 <option value="with-coffee">☕ Run with coffee</option>
                 <option value="without-coffee">🚫 Run without coffee</option>
               </select>
-              <Button variant="pink" type="submit">Sign Up</Button>
+              <Button variant="pink" type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Sign Up"}
+              </Button>
             </form>
+
+            {/* Feedback */}
+            {submitted && (
+              <p className="mt-4 text-green-600 font-medium">
+                ✅ Thanks for signing up! We'll be in touch soon.
+              </p>
+            )}
+            {error && (
+              <p className="mt-4 text-red-600 font-medium">
+                ❌ Something went wrong. Please try again.
+              </p>
+            )}
 
             <div className="mt-6 text-gray-700 space-y-2">
               <p>
@@ -173,8 +217,12 @@ export default function DarkPeakHome() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-12 text-center">
-          <div className="space-y-4">
+        <footer
+          className="text-white py-12 text-center bg-cover bg-center relative"
+          style={{ backgroundImage: "url('/banner.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-black/80"></div>
+          <div className="relative z-10 space-y-4">
             <MountainIcon className="w-10 h-10 mx-auto" />
             <p>© 2025 Dark Peak Run Club. All rights reserved.</p>
             <p className="text-sm text-gray-400">Glossop | Peak District | Est. 2025</p>

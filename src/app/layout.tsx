@@ -1,6 +1,6 @@
-// src/app/layout.tsx
 import "./globals.css";
 import { ReactNode } from "react";
+import Link from "next/link";
 
 export const metadata = {
   title: "Dark Peak Run Club | Trail Running in Glossop & Peak District",
@@ -41,7 +41,7 @@ export const metadata = {
     title: "Dark Peak Run Club",
     description: "Join our retro-fresh trail running community.",
     images: ["/banner.jpg"],
-    creator: "@darkpeakrunclub", // Optional: Add if you make a Twitter/X account
+    creator: "@darkpeakrunclub",
   },
   icons: {
     icon: "/favicon.ico",
@@ -53,7 +53,17 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {/* Floating Our Story nav link top right */}
+        <div className="absolute top-6 right-6 z-50">
+          <Link href="/our-story" className="text-white text-sm font-medium hover:underline">
+            Our Story
+          </Link>
+        </div>
+
+        {/* Site content */}
+        <main>{children}</main>
+      </body>
     </html>
   );
 }

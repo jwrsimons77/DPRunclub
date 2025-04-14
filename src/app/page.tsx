@@ -12,6 +12,8 @@ export default function DarkPeakHome() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [formError, setFormError] = useState(false);
+  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
 
   const events = [
     {
@@ -64,6 +66,32 @@ export default function DarkPeakHome() {
     }
   };
 
+  const handleNewsletter = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setNewsletterLoading(true);
+    setNewsletterSubmitted(false);
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      const res = await fetch("https://formspree.io/f/xpwpnape", {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      });
+
+      if (res.ok) {
+        setNewsletterSubmitted(true);
+        form.reset();
+      }
+    } catch {
+      // no-op
+    } finally {
+      setNewsletterLoading(false);
+    }
+  };
+
   return (
     <>
       <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-x-hidden">
@@ -97,9 +125,22 @@ export default function DarkPeakHome() {
             >
               Run slow, drink coffee, make mates.
             </motion.p>
-            <a href="https://www.instagram.com/darkpeakrunclub/" target="_blank" rel="noopener noreferrer">
-              <Button variant="pink">Join the Club</Button>
-            </a>
+
+            <form onSubmit={handleNewsletter} className="flex flex-col md:flex-row gap-2 items-center justify-center">
+              <input
+                type="email"
+                name="email"
+                placeholder="Your email"
+                required
+                className="px-5 py-3 rounded-full border border-white bg-white/80 text-black placeholder-gray-500 w-72 md:w-96 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <Button type="submit" variant="pink" className="rounded-full px-6 py-3">
+                {newsletterLoading ? "Joining..." : "Join Us"}
+              </Button>
+            </form>
+            {newsletterSubmitted && (
+              <p className="text-green-400 mt-3 font-medium">✅ You're on the list!</p>
+            )}
           </div>
         </section>
 
@@ -114,10 +155,14 @@ export default function DarkPeakHome() {
                     <h3 className="text-xl font-bold flex items-center gap-2">
                       <CalendarIcon className="w-5 h-5" /> {event.title}
                     </h3>
-                    <Button variant="pink" onClick={() => {
-                      setSelectedEvent(event.title);
-                      setModalOpen(true);
-                    }}>
+                    <Button
+                      variant="pink"
+                      className="text-sm px-4 py-2 md:text-base"
+                      onClick={() => {
+                        setSelectedEvent(event.title);
+                        setModalOpen(true);
+                      }}
+                    >
                       Book Now
                     </Button>
                   </div>

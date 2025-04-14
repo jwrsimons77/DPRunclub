@@ -11,6 +11,7 @@ export default function DarkPeakHome() {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const [formError, setFormError] = useState(false);
 
   const events = [
     {
@@ -33,46 +34,51 @@ export default function DarkPeakHome() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setSubmitted(false);
+    setFormError(false);
+
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const res = await fetch("https://formspree.io/f/mdkebqgy", {
-      method: "POST",
-      body: data,
-      headers: { Accept: "application/json" },
-    });
+    try {
+      const res = await fetch("https://formspree.io/f/mdkebqgy", {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      });
 
-    if (res.ok) {
-      setSubmitted(true);
-      setTimeout(() => {
-        setModalOpen(false);
-        setSubmitted(false);
-      }, 2000);
+      if (res.ok) {
+        setSubmitted(true);
+        form.reset();
+        setTimeout(() => {
+          setModalOpen(false);
+          setSubmitted(false);
+        }, 2000);
+      } else {
+        setFormError(true);
+      }
+    } catch {
+      setFormError(true);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <>
       <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-x-hidden">
+        {/* Floating DPRC logo */}
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
+          <a href="/">
+            <img src="/dprc-logo.svg" alt="DPRC Logo" className="h-8 w-auto md:h-12" />
+          </a>
+        </div>
+
         {/* Hero Section */}
         <section
           className="relative flex flex-col items-center justify-center text-center px-6 h-[100dvh] w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/banner.jpg')" }}
         >
-          {/* Clickable DPRC Logo as Home Link */}
-          <a
-            href="/"
-            className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30"
-          >
-            <img
-              src="/dprc-logo.svg"
-              alt="DPRC Logo"
-              className="h-8 w-auto md:h-12"
-            />
-          </a>
-
           <div className="absolute inset-0 bg-black/60 sm:bg-black/40"></div>
           <div className="relative z-10">
             <motion.h1
@@ -91,7 +97,7 @@ export default function DarkPeakHome() {
             >
               Run slow, drink coffee, make mates.
             </motion.p>
-            <a href="https://www.instagram.com/darkpeakrunclub/#" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/darkpeakrunclub/" target="_blank" rel="noopener noreferrer">
               <Button variant="pink">Join the Club</Button>
             </a>
           </div>
@@ -108,7 +114,7 @@ export default function DarkPeakHome() {
                     <h3 className="text-xl font-bold flex items-center gap-2">
                       <CalendarIcon className="w-5 h-5" /> {event.title}
                     </h3>
-                    <Button variant="pink" size="sm" onClick={() => {
+                    <Button variant="pink" onClick={() => {
                       setSelectedEvent(event.title);
                       setModalOpen(true);
                     }}>
@@ -157,13 +163,16 @@ export default function DarkPeakHome() {
                 </Button>
               </form>
               {submitted && <p className="mt-4 text-green-600 font-medium">✅ You're booked in!</p>}
+              {formError && <p className="mt-4 text-red-600 font-medium">❌ Please try again later.</p>}
             </div>
           </div>
         )}
 
-        {/* Why Dark Peak */}
-        <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 bg-cover bg-center"
-          style={{ backgroundImage: "url('/why-bg.jpg')" }}>
+        {/* Why Dark Peak Section */}
+        <section
+          className="relative flex flex-col items-center justify-center text-center px-6 py-28 bg-cover bg-center"
+          style={{ backgroundImage: "url('/why-bg.jpg')" }}
+        >
           <div className="absolute inset-0 bg-black/40"></div>
           <div className="relative z-10 max-w-3xl mx-auto text-white">
             <h2 className="text-3xl md:text-4xl font-semibold mb-6">Why Dark Peak?</h2>
@@ -171,13 +180,13 @@ export default function DarkPeakHome() {
               We’re not about race times or egos. Just good vibes, stunning trails, and a little retro flair.
               Whether you’re a seasoned runner or just getting started, there’s a place for you here.
             </p>
-            <a href="https://www.instagram.com/darkpeakrunclub/#" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/darkpeakrunclub/" target="_blank" rel="noopener noreferrer">
               <Button variant="pink">See Past Runs</Button>
             </a>
           </div>
         </section>
 
-        {/* Join Us */}
+        {/* Join Us Section */}
         <section className="px-6 py-20 bg-white text-center">
           <div className="max-w-xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-semibold mb-6">Join Us</h2>
@@ -186,6 +195,7 @@ export default function DarkPeakHome() {
                 e.preventDefault();
                 setLoading(true);
                 setSubmitted(false);
+                setFormError(false);
 
                 const form = e.currentTarget;
                 const data = new FormData(form);
@@ -200,7 +210,11 @@ export default function DarkPeakHome() {
                   if (res.ok) {
                     setSubmitted(true);
                     form.reset();
+                  } else {
+                    setFormError(true);
                   }
+                } catch {
+                  setFormError(true);
                 } finally {
                   setLoading(false);
                 }
@@ -237,10 +251,21 @@ export default function DarkPeakHome() {
             <div className="mt-6 text-gray-700 space-y-2">
               <p>
                 Or connect with us on:
-                <a href="https://strava.app.link/oSFM7LeCtSb" className="text-blue-600 underline ml-2" target="_blank" rel="noopener noreferrer">Strava</a>
+                <a
+                  href="https://strava.app.link/oSFM7LeCtSb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline ml-2"
+                >
+                  Strava
+                </a>
                 <span className="mx-2">|</span>
-                <a href="https://wa.me/447763856888?text=I'd%20like%20to%20learn%20more%20about%20running%20and%20coffee%20with%20Dark%20Peak%20Run%20Club"
-                  className="text-green-600 underline" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://wa.me/447763856888?text=I'd%20like%20to%20learn%20more%20about%20running%20and%20coffee%20with%20Dark%20Peak%20Run%20Club"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600 underline"
+                >
                   WhatsApp
                 </a>
               </p>
@@ -249,8 +274,10 @@ export default function DarkPeakHome() {
         </section>
 
         {/* Footer */}
-        <footer className="text-white py-12 text-center bg-cover bg-center relative"
-          style={{ backgroundImage: "url('/banner.jpg')" }}>
+        <footer
+          className="text-white py-12 text-center bg-cover bg-center relative"
+          style={{ backgroundImage: "url('/banner.jpg')" }}
+        >
           <div className="absolute inset-0 bg-black/80"></div>
           <div className="relative z-10 space-y-4">
             <MountainIcon className="w-10 h-10 mx-auto" />

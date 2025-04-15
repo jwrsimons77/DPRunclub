@@ -22,7 +22,7 @@ export default function DarkPeakHome() {
       time: "Meet at 8:30 AM. Mixed pace. Dogs welcome.",
     },
     {
-      title: "Midweek Chill Run",
+      title: "Midweek Run",
       location: "Glossop Town Woods",
       time: "Wednesdays at 6 PM. Head torches encouraged.",
     },
